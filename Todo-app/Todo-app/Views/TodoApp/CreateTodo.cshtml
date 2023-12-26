@@ -1,0 +1,59 @@
+﻿
+
+    return (
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <TextField
+                    {...register('textBox', { required: true })}
+                    label="Text Box"
+                    variant="outlined"
+                    style={{ marginBottom: '20px' }}
+                />
+                 <TextField
+                    {...register('textBox', { required: true })}
+                    label="Text Box"
+
+                    variant="outlined"
+                    style={{ marginBottom: '20px' }}
+                />
+                <br />
+                <Button variant="contained" type="submit">
+                    Gonder
+                </Button>
+            </form>
+        </div>
+    );
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+        const response = await fetch('https://localhost:7215/api/TodoApp',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    TodoTitle: 'A',
+                    TodoDesc: 'A',
+                    TodoDate: '21.21.21'
+
+                }),
+            });
+
+        if (response.ok) {
+            console.log('Veri başarıyla gönderildi!');
+
+        } else {
+            console.error('Veri gönderilemedi.');
+        }
+    }
+
+    catch (error) {
+        console.error('Hata:', error);
+    }
+};
+
+
+export default App;
