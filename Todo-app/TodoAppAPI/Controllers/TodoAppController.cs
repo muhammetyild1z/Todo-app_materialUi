@@ -44,7 +44,7 @@ namespace TodoAppAPI.Controllers
         }
 
         [HttpGet("TodoList")]
-        public IActionResult TodoList()
+        public IActionResult TodoList( )
         {      
             var value = _context.Todos.ToList();
             return Ok(value);
