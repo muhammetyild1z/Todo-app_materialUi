@@ -1,6 +1,6 @@
 ﻿namespace TodoAppAPI.TodoAppDto
 {
-    public class TodoAppResult
+    public class TodoAppResultDto
     {
         public int TodoID { get; set; }
         public string TodoTitle { get; set; }

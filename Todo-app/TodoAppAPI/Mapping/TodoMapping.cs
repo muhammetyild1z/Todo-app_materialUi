@@ -8,9 +8,10 @@ namespace TodoAppAPI.Mapping
     {
         public TodoMapping()
         {
-            CreateMap<Todo, TodoAppCreate>().ReverseMap();
-            CreateMap<Todo, TodoAppResult>().ReverseMap();
-            CreateMap<Todo, TodoAppUpdate>().ReverseMap();
+            CreateMap<Todo, TodoAppCreateDto>().ReverseMap();
+            CreateMap<Todo, TodoAppResultDto>().ReverseMap();
+            CreateMap<Todo, TodoAppUpdateDto>().ReverseMap();
+            CreateMap<AppUser, TodoAppRegisterDto>().ReverseMap();
         }
       
     }
