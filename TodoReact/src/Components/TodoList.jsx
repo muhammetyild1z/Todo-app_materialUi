@@ -1,89 +1,181 @@
 import React, { useState } from 'react';
-import { Alert, Table, Button } from "reactstrap";
 import moment from 'moment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TodoAdd from './TodoAdd';
+import Swal from 'sweetalert2'
+import swal from 'sweetalert';
+import { MdOutlineCancel } from "react-icons/md";
+import { IoIosAdd } from "react-icons/io";
+import { FaPencil } from "react-icons/fa6";
+import {
+    MDBBadge,
+    MDBCard,
+    MDBCardBody,
+    MDBCol,
+    MDBContainer,
+    MDBIcon,
+    MDBRow,
+    MDBTable,
+    MDBTableBody,
+    MDBTableHead,
+    MDBTooltip,
+} from "mdb-react-ui-kit";
 
-function TodoList(props) {
-   
+export default function todoList(props) {
+    //console.log(props.todos.todoTitle)
     const [visible, setVisible] = useState(false);
 
     const hide = () => {
         setVisible(false);
     };
 
-    const handleDeleteUser = (todoId) => {
-        
-        fetch(`https://localhost:7215/api/TodoApp/TodoRemove/${todoId}`, {
-            method: 'DELETE'
-            
+    const handleDeleteTodo = async (todoID, todoTitle) => {
+        Swal.fire({
+            title: "Silmek Istedigine Emin Misin?",
+            text: `${todoTitle} `,
+            icon: "error",
+            confirmButtonText: 'Gorevi sil',
+            showCancelButton: true,
+            cancelButtonText: 'Iptal et',
+            dangerMode: true,
+
         })
-        
-        .then(response => {
-            
-            if (response.ok) {
-                props.setTodos(props.todos.filter(todo => todo.todoID !== todoId));
-                swal({
-                    title: "Silmek Istedigine Emin Misin?",
-                    text: `${todo.todoTitle}`,
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                  })
-                  .then((willDelete) => {
-                    if (willDelete) {
-                      swal("Poof! Your imaginary file has been deleted!", {
+
+            .then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`https://localhost:7215/api/TodoApp/TodoRemove?id=${todoID}`, {
+                        method: 'DELETE'
+                    })
+                    Swal.fire({
+                        title: "Gorev Silindi..",
                         icon: "success",
-                      });
-                    } else {
-                      swal("Your imaginary file is safe!");
-                    }
-                  });
-            } else {
-               
-                console.error('Görevi silerken bir hata oluştu!');
-            }
-        })
-        .catch(error => console.error('İstek gönderilirken bir hata oluştu: ', error));
+                        confirmButtonText: 'Tamam',
+                    });
+
+                }
+            });
     };
 
+    const handleEditTodo = async (todoID, todoTitle, todoDesc, todoDate) => {
+
+        const { value: formValues } = await Swal.fire({
+            confirmButtonText: 'Gorevi Guncelle',
+            showCancelButton: true,
+            cancelButtonText: 'Iptal et',
+            title: "Gorev Guncelle",
+            html: `
+                <input value="${todoTitle}" id="swal-todoTitle" class="swal2-input">             
+                <input value="${todoDesc}" id="swal-todoDesc" class="swal2-textarea">      
+                `,
+
+            focusConfirm: false,
+            preConfirm: () => {
+                return [
+                    todoTitle = document.getElementById("swal-todoTitle").value,
+                    todoDesc = document.getElementById("swal-todoDesc").value,
+
+                ];
+            }
+        });
+        if (formValues) {
+            Swal.fire(JSON.stringify(formValues));
+
+            try {
+                const response = await fetch('https://localhost:7215/api/TodoApp/TodoEdit/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        TodoTitle: todoTitle,
+                        TodoDesc: todoDesc,
+                        TodoDate: moment(todoDate).format(),
+                        TodoID: todoID,
+                    }),
+                });
+
+                if (response.ok) {
+                    swal("Gorev Guncellendi", "Tamamlamayi Unutma..", "success")
+                        .then(props.hide)
+
+                }
+            } catch (error) {
+                console.error('İstek gönderilirken bir hata oluştu:', error);
+            }
+        }
+    };
     return (
-        <div>
-            <Button onClick={() => setVisible(true)} className="btn btn-primary" style={{ float: "right" }}>Yeni Görev Ekle</Button>
-            <TodoAdd visible={visible} hide={hide} />
-            {props.todos.length > 0 ? (
-                <Table className="table table-success table-striped mt-5" style={{ width: "1000px" }}>
-                    <thead>
-                        <tr>
-                            <th scope="col">Görev ID</th>
-                            <th scope="col">Görev Başlığı</th>
-                            <th scope="col">Görev Açıklaması</th>
-                            <th scope="col">Görev Eklenme Tarihi</th>
-                            <th></th><th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {props.todos.map((todo) => (
-                            <tr key={todo.todoID}>
-                                <td>{todo.todoID}</td>
-                                <td>{todo.todoTitle}</td>
-                                <td>{todo.todoDesc}</td>
-                                <td>{moment(todo.todoDate).format('YYYY-MM-DD HH:mm')}</td>
-                                <td><Button className="btn btn-success">Düzenle</Button></td>
-                                <td><Button className="btn btn-danger" onClick={() => handleDeleteUser(todo.todoID)}>Sil</Button></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            ) : (
-                <div>
-                    <Alert style={{ width: "1000px" }} color="danger">Görev Yok!</Alert>
-                    <Button className="btn btn-primary" style={{ float: "right" }}>Yeni Görev Ekle</Button>
-                    <TodoAdd />
-                </div>
-            )}
-        </div>
+        <section className="gradient-custom-2 vh-100">  
+            <MDBContainer className="py-5 h-100"> 
+                <MDBRow className="d-flex justify-content-center align-items-center">
+                    <MDBCol md="12" xl="10">
+                        <MDBCard className="mask-custom">
+                        <MDBBadge onClick={() => setVisible(true)}><IoIosAdd  /> Yeni Görev Ekle</MDBBadge>
+                        <TodoAdd visible={visible} hide={hide} />
+                            <MDBCardBody className="p-4 ">
+                                <div className="text-center pt-3 pb-2">
+                                    <img
+                                        src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-todo-list/check1.webp"
+                                        alt="Check"
+                                        width="60"
+                                    />
+                                    <h2 className="my-4">Yapılacak Listesi</h2>
+                                </div>                              
+                                <MDBTable className="text-white mb-0">
+                                    <MDBTableHead>
+                                        <tr>
+                                            <th scope="col">Gorev No</th>
+                                            <th scope="col">Gorev Adi</th>
+                                            <th scope="col">Gorev Aciklamasi</th>
+                                            <th scope="col">Gorev Guncellenme Tarihi</th>
+                                           
+                                        </tr>
+                                    </MDBTableHead>
+                                    <MDBTableBody>
+
+                                        {props.todos.map((todo) => (
+
+                                            <tr key={todo.todoID} className="fw-normal">
+                                                <th>
+                                                    <span className="ms-2">
+                                                        {todo.todoID}</span>
+                                                </th>
+                                                <td className="align-middle">
+                                                    <span>
+                                                        {todo.todoTitle}
+                                                    </span>
+                                                </td>
+                                                <td className="align-middle">
+                                                    <span>
+                                                        {todo.todoDesc}
+                                                    </span>
+                                                </td>
+                                                <td className="align-middle">
+                                                    <span>
+                                                        {moment(todo.todoDate).format('LLL')}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <MDBBadge color='success'>
+                                                        <FaPencil  onClick={() => handleEditTodo(todo.todoID, todo.todoTitle, todo.todoDesc)}/>
+                                                    </MDBBadge>
+                                                </td>
+                                                <td>
+                                                    <MDBBadge color='danger'>
+                                                        <MdOutlineCancel  onClick={() => handleDeleteTodo(todo.todoID, todo.todoTitle)}/>
+                                                    </MDBBadge>
+
+                                                </td>
+
+                                            </tr>
+                                        ))}
+                                    </MDBTableBody>
+                                </MDBTable>
+                            </MDBCardBody>
+                        </MDBCard>
+                    </MDBCol>
+                </MDBRow>
+            </MDBContainer>
+        </section>
     );
 }
-
-export default TodoList;

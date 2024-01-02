@@ -5,26 +5,25 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 const HomePage = () => {
-  useEffect(() => {
+  const [todos, setTodos] = useState([]);
+  
+
+  useEffect(() => { 
     const fetchTodos = async () => {
       try {
         const response = await fetch('https://localhost:7215/api/TodoApp/TodoList');
         const result = await response.json();
         setTodos(result);
+        
       } catch (error) {
         console.error('Bağlantı hatası', error);
       }
-    };
+    }; 
 
-    fetchTodos();
-    const interval = setInterval(() => {
       fetchTodos();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [todos]);
 
-  const [todos, setTodos] = useState([]);
-  
+
  
   return (
     <>
@@ -36,7 +35,7 @@ const HomePage = () => {
       </Navbar>
 
       <TodoList todos={todos} />
-
+      {/* <Login/> */}
      
     </>
   );

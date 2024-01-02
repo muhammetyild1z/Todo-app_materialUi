@@ -55,6 +55,17 @@ namespace TodoAppAPI.Controllers
             return Ok(value);
         }
 
+
+        [HttpPost("TodoEdit")]
+        public IActionResult TodoEdit( TodoAppUpdateDto todoAppUpdateDto)
+        {
+            var unchangedTodo = _context.Todos.Find(todoAppUpdateDto.TodoID);  
+            _context.Entry(unchangedTodo).CurrentValues.SetValues(todoAppUpdateDto);   
+            _context.SaveChanges();
+            return Ok("Ba;ariyla guncellendi");
+        }
+
+
         [HttpPost("TodoLogin")]
         public async Task<IActionResult> TodoLogin(TodoAppLoginDto todoAppLoginDto)
         {

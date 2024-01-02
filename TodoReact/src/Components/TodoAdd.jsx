@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Input, Row, Col } from 'reactstrap';
 import moment from 'moment';
-import swal from 'sweetalert';
-
+import Swal from 'sweetalert2';
+import HomePage from '../Pages/HomePage';
 function TodoAdd(props) {
     const [todoTitle, setTodoTitle] = useState('');
     const [todoDesc, setTodoDesc] = useState('');
-   
+
 
     const addTodo = async () => {
         try {
@@ -23,16 +23,31 @@ function TodoAdd(props) {
             });
 
             if (response.ok) {
-                swal("Gorev Eklendi", "Tamamlamayi Unutma..", "success")
-                    .then(props.hide)
-                setTodoTitle('');
-                setTodoDesc('');
-            }
-        } catch (error) {
+               
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+                }
+              });
+              Toast.fire({
+                  
+                icon: "success",
+                title: "Gorev Eklendi."
+              }).then(props.hide);
+              setTodoTitle('');
+              setTodoDesc('');
+              
+        }} catch (error) {
             console.error('İstek gönderilirken bir hata oluştu:', error);
         }
     }
-      
+
     const handleTitleChange = (e) => {
         setTodoTitle(e.target.value);
     }
