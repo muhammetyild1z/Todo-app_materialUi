@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Input, Row, Col } from 'reactstrap';
 import moment from 'moment';
 import Swal from 'sweetalert2';
-import HomePage from '../Pages/HomePage';
-function TodoAdd(props) {
+
+
+function TodoAdd({visible, hide ,fetchTodoList}) {
     const [todoTitle, setTodoTitle] = useState('');
     const [todoDesc, setTodoDesc] = useState('');
 
@@ -23,7 +24,7 @@ function TodoAdd(props) {
             });
 
             if (response.ok) {
-               
+                fetchTodoList()
             const Toast = Swal.mixin({
                 toast: true,
                 position: "top-end",
@@ -58,7 +59,7 @@ function TodoAdd(props) {
 
     return (
         <div>
-            <Modal isOpen={props.visible}>
+            <Modal isOpen={visible}>
                 <ModalHeader>Görev Ekle</ModalHeader>
                 <ModalBody>
                     <Form>
@@ -88,14 +89,13 @@ function TodoAdd(props) {
                     </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button className="btn btn-danger" onClick={props.hide}>Kapat</Button>
+                    <Button className="btn btn-danger" onClick={hide}>Kapat</Button>
                     <Button className="btn btn-success" onClick={addTodo}>Ekle</Button>
                 </ModalFooter>
             </Modal>
         </div>
     );
 }
-
 export default TodoAdd;
 
 

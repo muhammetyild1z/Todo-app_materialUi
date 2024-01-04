@@ -12,6 +12,7 @@ namespace TodoAppAPI.Mapping
             CreateMap<Todo, TodoAppResultDto>().ReverseMap();
             CreateMap<Todo, TodoAppUpdateDto>().ReverseMap();
             CreateMap<AppUser, TodoAppRegisterDto>().ReverseMap();
+            CreateMap<AppUser, TodoAppLoginDto>().ReverseMap();
         }
       
     }

@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form, FormGroup, Input, Row, Col } from 'reactstrap';
-import swal from 'sweetalert';
+import {
+    MDBInput,
+    MDBRow,   
+    MDBBtn
+} from 'mdb-react-ui-kit';
+import TodoList from '../Components/TodoList';
 
 function Login() {
+    const [userName, setuserName] = useState('');
+    const [password, setpassword] = useState('');
 
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
-   
+    const checkLogin = async (e) => {
+        e.preventDefault();
 
-    const Login = async () => {
         try {
             const response = await fetch('https://localhost:7215/api/TodoApp/TodoLogin', {
                 method: 'POST',
@@ -17,70 +21,61 @@ function Login() {
                 },
                 body: JSON.stringify({
                     UserName: userName,
-                    PasswordHash: password,
+                    PasswordHash: password
                    
                 }),
             });
 
             if (response.ok) {
-                swal("Giris Basarili", "Yonlendiriliyorsunuz..", "success")
-                    .then(props.hide)
-                    setUserName('');
-                    setPassword('');
+              
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 1000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                    }
+                });
+                Toast.fire({
+
+                    icon: "success",
+                    title: "Giris Basarili"
+                });
+                setuserName('');
+                setpassword('');
+                
+
+            }
+            else{
+                console.log("tes")
             }
         } catch (error) {
             console.error('İstek gönderilirken bir hata oluştu:', error);
         }
-    }
-      
-    const handleUserNameChange = (e) => {
-        setUserName(e.target.value);
-    }
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    }
+    } 
 
     return (
-        <div>
-            <Modal isOpen={props.visible}>
-                <ModalHeader>Giris Yap</ModalHeader>
-                <ModalBody>
-                    <Form>
-                        <Row>
-                            <Col md={6}>
-                                <FormGroup>
-                                    <Input
-                                        onChange={handleUserNameChange}
-                                        style={{ marginBottom: "15px" }}
-                                        id="exampleEmail"
-                                        name="userName"
-                                        placeholder="Görev Başlık"
-                                        type="text"
-                                        value={userName}
-                                    />
-                                    <Input
-                                        onChange={handlePasswordChange}
-                                        id="exampleEmail1"
-                                        name="password"
-                                        placeholder="Görev Açıklama"
-                                        type="text"
-                                        value={password}
-                                    />
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                    </Form>
-                </ModalBody>
-                <ModalFooter>
-                    {/* <Button className="btn btn-danger" onClick={props.hide}>Kapat</Button> */}
-                    <Button className="btn btn-success" onClick={Login}>Giris Yap</Button>
-                </ModalFooter>
-            </Modal>
-        </div>
-    );
-}
+        <form onSubmit={checkLogin}>
+            <MDBInput className='mb-4' type='text'  placeholder='Kullanici Adi'  onChange={(e) => setuserName(e.target.value)}/>
+            <MDBInput className='mb-4' type='password' placeholder='Sifre' name='password' onChange={(e) => setpassword(e.target.value)}/>
 
+            <MDBRow className='mb-4'>
+                <MDBBtn type='submit' block >
+                    Giris Yap  
+                </MDBBtn>
+
+            </MDBRow>
+            <MDBBtn type='submit' block>
+                Uye Ol
+            </MDBBtn>
+
+        </form>
+    );
+
+}
 export default Login;
 
 

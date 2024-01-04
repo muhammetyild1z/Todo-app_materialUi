@@ -51,7 +51,7 @@ namespace TodoAppAPI.Controllers
         [HttpGet("TodoList")]
         public IActionResult TodoList( )
         {      
-            var value = _context.Todos.ToList();
+            var value = _context.Todos.ToList().OrderByDescending(x=>x.TodoDate);
             return Ok(value);
         }
 
@@ -69,14 +69,15 @@ namespace TodoAppAPI.Controllers
         [HttpPost("TodoLogin")]
         public async Task<IActionResult> TodoLogin(TodoAppLoginDto todoAppLoginDto)
         {
-            var user = await _userManager.FindByNameAsync(todoAppLoginDto.UserName);
-            var result = await _signInManager.PasswordSignInAsync(todoAppLoginDto.UserName, todoAppLoginDto.Password, false, false);
+            var userjson = _mapper.Map<AppUser>(todoAppLoginDto);
+            
+            var result = await _signInManager.PasswordSignInAsync(userjson.UserName, userjson.PasswordHash, false, false);
             if (result.Succeeded)
             {
                 return Ok("Kullanici Girisi Basarili..");
             }
 
-            return Ok("Kullanici Girisi Yapilamadi..");
+            return BadRequest("Kullanici Girisi Yapilamadi..");
         }
 
         [HttpPost("TodoRegister")]
