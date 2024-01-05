@@ -25,7 +25,7 @@ function Login() {
                    
                 }),
             });
-
+console.log(response)
             if (response.ok) {
               
                 const Toast = Swal.mixin({
